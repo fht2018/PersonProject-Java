@@ -1,43 +1,55 @@
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
+import java.io.*;
+import java.util.*;
+
 
 public class Main {
     public static void main(String[] args) throws IOException {
-//        文件输入输出地址
+        //定义开始时间
+        long start_time = System.currentTimeMillis();
+
         File fileIn = null;
         if(args.length>0){
             fileIn = new File(args[0]);
         }else {
-            fileIn = new File("D:/softTest/input.txt");
-            System.out.println("未输入文件名");
-            System.exit(0);
+            fileIn = new File("input.txt");
+            System.out.println("未输入文件名,使用默认名:input.txt");
+//            System.exit(0);
         }
+        //输出到result.txt
         String out_address= "result.txt";
         FileOutputStream fileOut = new FileOutputStream(out_address);
 
-        Count count = new Count();
-        int cnum = count.ccount(fileIn);
-        int lnum = count.lcount();
-        int wnum = count.wcount();
-        List<HashMap.Entry<String, Integer>>  wordList= count.wordlist();
-        String result = "characters:" + cnum + "\r\n" +
-                        "words:" + wnum      + "\r\n" +
-                        "lines:" + lnum      + "\r\n" ;
 
-        //输出单词
+        //实例话Count类
+        Count count = new Count(fileIn);
+
+        //获取字符数
+        int charactersNum = count.charactersCount();
+        //读取单词数
+        int wordNum = count.wordCount();
+        //获取有效行数
+        int lineNum = count.lineCount();
+        List<HashMap.Entry<String, Integer>> m = count.getWords();
+
+        String result = "characters:" + charactersNum + "\r\n" +
+                "words:" + wordNum      + "\r\n" +
+                "lines:" + lineNum      + "\r\n" ;
         int j = 0;
         String t = new String();
-        if(wordList.size()!=0){
-            for(;((j<10)&&(j<wordList.size()));j++){
-                t = "<"+ wordList.get(j).getKey() + ">:" + wordList.get(j).getValue();
-                result += t + "\r\n";
+        if(m != null){
+            if(m.size()!=0){
+                for(;((j<10)&&(j<m.size()));j++){
+                    t = "<"+ m.get(j).getKey() + ">:" + m.get(j).getValue();
+                    result += t + "\r\n";
+                }
             }
         }
         fileOut.write(result.getBytes());
-
         fileOut.close();
+
+        //定义结束时间
+        long end_time = System.currentTimeMillis();
+        System.out.println(end_time-start_time);
+
     }
 }
